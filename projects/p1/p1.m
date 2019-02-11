@@ -8,7 +8,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%% PREPROCESSING
+%% 1. PREPROCESSING
 %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%
 % READ SIGNAL AND SAMPLE RATE
@@ -31,10 +31,10 @@ title('"sun.wav" with respect to time');
 xlabel('Samples');
 ylabel('Signal value');
 subplot(2,1,2)
-spectrogram(X,Fr,Fr/2,Nfft,Fs,'yaxis');
+spectrogram(X,Fr,Fr/2,Nfft,Fs,'yaxis')
 title('Spectrogram of "sun.wav", nfft=1024, winSize=256, nOverlap=128');
 
-%% ENERGY AND ZERO CROSSING RATE
+%% 2. ENERGY AND ZERO CROSSING RATE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZERO PAD TO MAKE EVEN MULTIPLE OF Fr
@@ -77,7 +77,7 @@ subplot(3,1,3)
 plot(Xzcrp)
 title('Zero crossing rate per frame')
 
-%% PHONEME SELECTION
+%% 3. PHONEME SELECTION
 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%
 % PHONEME FRAME CHOICES
@@ -88,33 +88,105 @@ Nidx=20;
 % PLOT PHONEMES AGAINST TIME (SAMPLE #) AXIS
 figure(3)
 subplot(3,1,1)
-plot(Xk(:,Sidx))
+Ph1=Xk(:,Sidx);
+plot(Ph1)
 title('S Phoneme (frame 5)')
 xlabel('Sample number (relative to frame)')
 
 subplot(3,1,2)
-plot(Xk(:,Uidx))
+Ph2=Xk(:,Uidx);
+plot(Ph2)
 title('U Phoneme (frame 14)');
 xlabel('Sample number (relative to frame)')
 
 subplot(3,1,3)
-plot(Xk(:,Nidx))
+Ph3=Xk(:,Nidx);
+plot(Ph3)
 title('N Phoneme (frame 20)');
 xlabel('Sample number (relative to frame)')
 
 
-%% LOG MAGNITUDE FFT
+%% 4. LOG MAGNITUDE FFT
 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%
+% APPLY A HAMMING WINDOW TO EACH PHONEME AND COMPUTE THE LOG MAGNITUDE
+W=hamming(Fr);
+Nfft=256;
+Fax=Fs*[0:Nfft-1]/Nfft;
+
+% COMPUTE PHONEME LOG MAGNITUDE
+Ph1mag=20*log10(abs(fft(Ph1.*W,Nfft)));
+Ph2mag=20*log10(abs(fft(Ph2.*W,Nfft)));
+Ph3mag=20*log10(abs(fft(Ph3.*W,Nfft)));
+
+% PLOT LOG MAGNITUDES OF PHONEMES
+figure(4)
+subplot(3,1,1)
+plot(Fax,Ph1mag)
+subplot(3,1,2)
+plot(Fax,Ph2mag)
+subplot(3,1,3)
+plot(Fax,Ph3mag)
 
 
-%% CEPSTRUM
+%% 5. CEPSTRUM
 %%%%%%%%%%%
 %%%%%%%%%%%
+
+Ph1cep=ifft(log(abs(fft(W.*Ph1,256))));
+Ph2cep=ifft(log(abs(fft(W.*Ph2,256))));
+Ph3cep=ifft(log(abs(fft(W.*Ph3,256))));
+
+figure(5)
+subplot(3,1,1)
+plot(Ph1cep)
+subplot(3,1,2)
+plot(Ph2cep)
+subplot(3,1,3)
+plot(Ph3cep)
+
+% peak of u phoneme at idx=4 ->  156.25Hz, idx=83 -> 3242.1875Hz
+% peak of n phoneme at idx=69 -> 2695.3125Hz
+
+
+%% 6. LIFTERED SPECTRUM
+%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%
+
+% SELECT A SINGLE CEPSTRUM CUTOFF TO SEPARATE VOCAL TRACT AND EXCITATION
+Cepc=30;
+
+[b,a]=butter(7,Cepc/Fr,'low');
+Ph1Lft=20*log10(abs(filtfilt(b,a,Ph1)));
+Ph2Lft=20*log10(abs(filtfilt(b,a,Ph2)));
+Ph3Lft=20*log10(abs(filtfilt(b,a,Ph3)));
+
+figure(6)
+subplot(3,1,1)
+plot(Ph1Lft)
+subplot(3,1,2)
+plot(Ph2Lft)
+subplot(3,1,3)
+plot(Ph3Lft)
+
+
 
 %% LPC SPECTRA
 %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%
+
+Ph1LPC4=lpc(Ph1,4);
+Ph1LPC14=lpc(Ph1,14);
+Ph1LPC404=lpc(Ph1,40);
+
+Ph2LPC4=lpc(Ph2,4);
+Ph2LPC14=lpc(Ph2,14);
+Ph2LPC40=lpc(Ph2,40);
+
+Ph3LPC4=lpc(Ph3,4);
+Ph3LPC14=lpc(Ph3,14);
+Ph3LPC40=lpc(Ph3,40);
+
 
 
 %% LPC RESIDUAL
