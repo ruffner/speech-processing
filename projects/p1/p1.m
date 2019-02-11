@@ -80,6 +80,27 @@ title('Zero crossing rate per frame')
 %% PHONEME SELECTION
 %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%
+% PHONEME FRAME CHOICES
+Sidx=5;
+Uidx=14;
+Nidx=20;
+
+% PLOT PHONEMES AGAINST TIME (SAMPLE #) AXIS
+figure(3)
+subplot(3,1,1)
+plot(Xk(:,Sidx))
+title('S Phoneme (frame 5)')
+xlabel('Sample number (relative to frame)')
+
+subplot(3,1,2)
+plot(Xk(:,Uidx))
+title('U Phoneme (frame 14)');
+xlabel('Sample number (relative to frame)')
+
+subplot(3,1,3)
+plot(Xk(:,Nidx))
+title('N Phoneme (frame 20)');
+xlabel('Sample number (relative to frame)')
 
 
 %% LOG MAGNITUDE FFT
