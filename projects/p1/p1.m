@@ -20,7 +20,7 @@ Fs=Xinfo.SampleRate;
 % CHOOSE FRAME SIZE, THESE TWO SUPPORTED BY THE SCRIPT
 % 256 -> 25ms CHUNKS
 % 512 -> 50ms CHUNKS
-Fr=512;
+Fr=256;
 Nfft=Fr;
 
 % ZERO MEAN THE SIGNAL
@@ -245,6 +245,37 @@ title('LPC of degree 40 for "n" phoneme')
 %% LPC RESIDUAL
 %%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%
+
+
+Nfrms=length(X)/Fr;
+Xlpc=[];
+for i=1:Nfrms
+    Xlpc(i,:)=1-20*log10(abs(lpc(Xk(:,i),14)));
+end
+
+figure(8)
+imagesc(Xlpc)
+
+
+
+Ph1r=1-20*log10(abs(lpc(Ph1,14)));
+Ph2r=1-20*log10(abs(lpc(Ph2,14)));
+Ph3r=1-20*log10(abs(lpc(Ph3,14)));
+
+figure(9)
+subplot(3,1,1)
+plot(Ph1r)
+title('')
+
+subplot(3,1,2)
+plot(Ph2r)
+title('')
+
+subplot(3,1,3)
+plot(Ph3r)
+title('')
+
+
 
 %% PITCH TRACKING
 %%%%%%%%%%%%%%%%%
