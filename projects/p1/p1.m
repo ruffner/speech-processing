@@ -20,7 +20,7 @@ Fs=Xinfo.SampleRate;
 % CHOOSE FRAME SIZE, THESE TWO SUPPORTED BY THE SCRIPT
 % 256 -> 25ms CHUNKS
 % 512 -> 50ms CHUNKS
-Fr=256;
+Fr=512;
 Nfft=Fr;
 
 % ZERO MEAN THE SIGNAL
@@ -168,28 +168,28 @@ plot(Ph3cep)
 if Fr==256
     Cepc=30;
 else
-    Cepc=60;
+    Cepc=50;
 end
 
-% SAVE ONLY LOW FREQ VOCAL TRACT INFO
-Ph1cep=Ph1cep(1:Cepc);
-Ph2cep=Ph2cep(1:Cepc);
-Ph3cep=Ph3cep(1:Cepc);
+% SAVE ONLY LOW FREQ VOCAL TRACT INFO, ZERO OUT THE REST SYMMETRICALLY
+%Ph1cep=[Ph1cep(1:50);zeros(Fr-Cepc*2-1,1);Ph1cep(length(Ph1cep)-Cepc:end)]
+%Ph2cep=[Ph2cep(1:50);zeros(Fr-Cepc*2-1,1);Ph2cep(length(Ph2cep)-Cepc:end)]
+%Ph3cep=[Ph3cep(1:50);zeros(Fr-Cepc*2-1,1);Ph3cep(length(Ph3cep)-Cepc:end)];
 
 % LIFTER THE SPECTRA
 [b,a]=butter(5,Cepc/Fr,'low');
-Ph1Lft=20*log10(abs(filtfilt(b,a,Ph1cep)));
-Ph2Lft=20*log10(abs(filtfilt(b,a,Ph2cep)));
-Ph3Lft=20*log10(abs(filtfilt(b,a,Ph3cep)));
+Ph1Lft=20*log10(abs(ifft(filtfilt(b,a,Ph1cep),Nfft)));
+Ph2Lft=20*log10(abs(ifft(filtfilt(b,a,Ph2cep),Nfft)));
+Ph3Lft=20*log10(abs(ifft(filtfilt(b,a,Ph3cep),Nfft)));
 
 % PLOT THE LIFTERED SPECTRA
 figure(6)
 subplot(3,1,1)
-plot(Ph1Lft)
+plot(Fax,Ph1Lft)
 subplot(3,1,2)
-plot(Ph2Lft)
+plot(Fax,Ph2Lft)
 subplot(3,1,3)
-plot(Ph3Lft)
+plot(Fax,Ph3Lft)
 
 
 
@@ -197,47 +197,47 @@ plot(Ph3Lft)
 %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%
 
-Ph1LPC4=20*log10(abs(lpc(W.*Ph1,4)));
-Ph1LPC14=20*log10(abs(lpc(W.*Ph1,14)));
-Ph1LPC40=20*log10(abs(lpc(W.*Ph1,40)));
+Ph1LPC4= lpc(W.*Ph1,4);
+Ph1LPC14=lpc(W.*Ph1,14);
+Ph1LPC40=lpc(W.*Ph1,40);
 
-Ph2LPC4=20*log10(abs(lpc(W.*Ph2,4)));
-Ph2LPC14=20*log10(abs(lpc(W.*Ph2,14)));
-Ph2LPC40=20*log10(abs(lpc(W.*Ph2,40)));
+Ph2LPC4= lpc(W.*Ph2,4);
+Ph2LPC14=lpc(W.*Ph2,14);
+Ph2LPC40=lpc(W.*Ph2,40);
 
-Ph3LPC4=20*log10(abs(lpc(W.*Ph3,4)));
-Ph3LPC14=20*log10(abs(lpc(W.*Ph3,14)));
-Ph3LPC40=20*log10(abs(lpc(W.*Ph3,40)));
+Ph3LPC4=lpc(W.*Ph3,4);
+Ph3LPC14=lpc(W.*Ph3,14);
+Ph3LPC40=lpc(W.*Ph3,40);
 
 figure(7)
 subplot(3,3,1)
-plot(Ph1LPC4)
+plot(Fax,20*log10(abs(freqz(1,Ph1LPC4))))
 title('LPC of degree 4 for "s" phoneme')
 subplot(3,3,2)
-plot(Ph1LPC14)
+plot(Fax,20*log10(abs(freqz(1,Ph1LPC14))))
 title('LPC of degree 14 for "s" phoneme')
 subplot(3,3,3)
-plot(Ph1LPC40)
+plot(Fax,20*log10(abs(freqz(1,Ph1LPC40))))
 title('LPC of degree 40 for "s" phoneme')
 
 subplot(3,3,4)
-plot(Ph2LPC4)
+plot(Fax,20*log10(abs(freqz(1,Ph2LPC4))))
 title('LPC of degree 4 for "u" phoneme')
 subplot(3,3,5)
-plot(Ph2LPC14)
+plot(Fax,20*log10(abs(freqz(1,Ph2LPC14))))
 title('LPC of degree 14 for "u" phoneme')
 subplot(3,3,6)
-plot(Ph2LPC40)
+plot(Fax,20*log10(abs(freqz(1,Ph2LPC40))))
 title('LPC of degree 40 for "u" phoneme')
 
 subplot(3,3,7)
-plot(Ph3LPC4)
+plot(Fax,20*log10(abs(freqz(1,Ph3LPC4))))
 title('LPC of degree 4 for "n" phoneme')
 subplot(3,3,8)
-plot(Ph3LPC14)
+plot(Fax,20*log10(abs(freqz(1,Ph3LPC14))))
 title('LPC of degree 14 for "n" phoneme')
 subplot(3,3,9)
-plot(Ph3LPC40)
+plot(Fax,20*log10(abs(freqz(1,Ph3LPC40))))
 title('LPC of degree 40 for "n" phoneme')
 
 
@@ -248,32 +248,41 @@ title('LPC of degree 40 for "n" phoneme')
 
 
 Nfrms=length(X)/Fr;
-Xlpc=[];
+Xres=[];
 for i=1:Nfrms
-    Xlpc(i,:)=1-20*log10(abs(lpc(Xk(:,i),14)));
+    res=lpc(Xk(:,i),14);
+    temp=filtfilt(1,res,Xk(:,i));
+    Xres(i,:)=temp;
 end
 
-figure(8)
-imagesc(Xlpc)
+figure(8);
+plot(reshape(Xres',Fr*Nfrms,1))
+title('LPC Residual Signal')
+xlabel('Time (in samples)')
 
 
 
-Ph1r=1-20*log10(abs(lpc(Ph1,14)));
-Ph2r=1-20*log10(abs(lpc(Ph2,14)));
-Ph3r=1-20*log10(abs(lpc(Ph3,14)));
+
+Ph1r=lpc(Ph1,14);
+Ph2r=lpc(Ph2,14);
+Ph3r=lpc(Ph3,14);
+
+Ph1rf=filtfilt(1,Ph1r,[Xk(:,Sidx-1);Ph1]);
+Ph2rf=filtfilt(1,Ph2r,[Xk(:,Uidx-1);Ph2]);
+Ph3rf=filtfilt(1,Ph3r,[Xk(:,Nidx-1);Ph3]);
 
 figure(9)
 subplot(3,1,1)
-plot(Ph1r)
-title('')
+plot(Ph1rf(513:end))
+title('LPC Residual for "s" Phoneme')
 
 subplot(3,1,2)
-plot(Ph2r)
-title('')
+plot(Ph2rf(513:end))
+title('LPC Residual for "u" Phoneme')
 
 subplot(3,1,3)
-plot(Ph3r)
-title('')
+plot(Ph3rf(513:end))
+title('LPC Residual for "n" Phoneme')
 
 
 %% 10. FORMANT ANALYSIS
