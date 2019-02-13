@@ -10,8 +10,8 @@
 % Supported frame sized are 256 and 512
 
 %% 1. PREPROCESSING
-%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
 % READ SIGNAL AND SAMPLE RATE
 X=audioread('sun.wav');
 Xinfo=audioinfo('sun.wav');
@@ -38,8 +38,8 @@ spectrogram(X,Fr,Fr*.75,Nfft,Fs,'yaxis')
 title('Spectrogram of "sun.wav", nfft=1024, winSize=256, nOverlap=128');
 
 %% 2. ENERGY AND ZERO CROSSING RATE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZERO PAD TO MAKE EVEN MULTIPLE OF Fr
 X=[X; zeros(length(X)-floor(length(X)/Fr)*Fr,1)];
 
@@ -81,8 +81,8 @@ plot(Xzcrp)
 title('Zero crossing rate per frame')
 
 %% 3. PHONEME SELECTION
-%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
 % PHONEME FRAME CHOICES
 if Fr==256
     Sidx=6;
@@ -118,8 +118,8 @@ xlabel('Sample number (relative to frame)')
 
 
 %% 4. LOG MAGNITUDE FFT
-%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
 % APPLY A HAMMING WINDOW TO EACH PHONEME AND COMPUTE THE LOG MAGNITUDE
 W=hamming(Fr);
 Nfft=Fr;
@@ -141,8 +141,8 @@ plot(Fax,Ph3mag)
 
 
 %% 5. CEPSTRUM
-%%%%%%%%%%%
-%%%%%%%%%%%
+%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%
 
 Ph1cep=ifft(log(abs(fft(W.*Ph1,Fr))));
 Ph2cep=ifft(log(abs(fft(W.*Ph2,Fr))));
@@ -161,8 +161,8 @@ plot(Ph3cep)
 
 
 %% 6. LIFTERED SPECTRUM
-%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
 
 % SELECT A SINGLE CEPSTRUM CUTOFF TO SEPARATE VOCAL TRACT AND EXCITATION
 if Fr==256
@@ -193,9 +193,9 @@ plot(Ph3Lft)
 
 
 
-%% LPC SPECTRA
-%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%
+%% 8. LPC SPECTRA
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
 
 Ph1LPC4=20*log10(abs(lpc(W.*Ph1,4)));
 Ph1LPC14=20*log10(abs(lpc(W.*Ph1,14)));
@@ -242,9 +242,9 @@ title('LPC of degree 40 for "n" phoneme')
 
 
 
-%% LPC RESIDUAL
-%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%
+%% 8. LPC RESIDUAL
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
 
 
 Nfrms=length(X)/Fr;
@@ -276,13 +276,7 @@ plot(Ph3r)
 title('')
 
 
-
-%% PITCH TRACKING
-%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%
-
-
-%% FORMANT ANALYSIS
-%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%
+%% 10. FORMANT ANALYSIS
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
 
