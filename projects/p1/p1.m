@@ -90,8 +90,8 @@ if Fr==256
     Nidx=20;
 elseif Fr==512
     Sidx=4;
-    Uidx=7;
-    Nidx=11;
+    Uidx=8;
+    Nidx=12;
 else
     disp('error no Fr (frame size) defined');
 end
@@ -172,24 +172,23 @@ else
 end
 
 % SAVE ONLY LOW FREQ VOCAL TRACT INFO, ZERO OUT THE REST SYMMETRICALLY
-%Ph1cep=[Ph1cep(1:50);zeros(Fr-Cepc*2-1,1);Ph1cep(length(Ph1cep)-Cepc:end)]
-%Ph2cep=[Ph2cep(1:50);zeros(Fr-Cepc*2-1,1);Ph2cep(length(Ph2cep)-Cepc:end)]
-%Ph3cep=[Ph3cep(1:50);zeros(Fr-Cepc*2-1,1);Ph3cep(length(Ph3cep)-Cepc:end)];
+Ph1cep=[Ph1cep(1:50);zeros(Fr-Cepc*2-1,1);Ph1cep(length(Ph1cep)-Cepc:end)];
+Ph2cep=[Ph2cep(1:50);zeros(Fr-Cepc*2-1,1);Ph2cep(length(Ph2cep)-Cepc:end)];
+Ph3cep=[Ph3cep(1:50);zeros(Fr-Cepc*2-1,1);Ph3cep(length(Ph3cep)-Cepc:end)];
 
 % LIFTER THE SPECTRA
-[b,a]=butter(5,Cepc/Fr,'low');
-Ph1Lft=20*log10(abs(ifft(filtfilt(b,a,Ph1cep),Nfft)));
-Ph2Lft=20*log10(abs(ifft(filtfilt(b,a,Ph2cep),Nfft)));
-Ph3Lft=20*log10(abs(ifft(filtfilt(b,a,Ph3cep),Nfft)));
+Ph1Lft=fft(Ph1cep);
+Ph2Lft=fft(Ph2cep);
+Ph3Lft=fft(Ph3cep);
 
 % PLOT THE LIFTERED SPECTRA
 figure(6)
 subplot(3,1,1)
-plot(Fax,Ph1Lft)
+plot(Fax,real(Ph1Lft))
 subplot(3,1,2)
-plot(Fax,Ph2Lft)
+plot(Fax,real(Ph2Lft))
 subplot(3,1,3)
-plot(Fax,Ph3Lft)
+plot(Fax,real(Ph3Lft))
 
 
 
@@ -251,7 +250,7 @@ Nfrms=length(X)/Fr;
 Xres=[];
 for i=1:Nfrms
     res=lpc(Xk(:,i),14);
-    temp=filtfilt(1,res,Xk(:,i));
+    temp=filter(res,1,Xk(:,i));
     Xres(i,:)=temp;
 end
 
@@ -267,21 +266,21 @@ Ph1r=lpc(Ph1,14);
 Ph2r=lpc(Ph2,14);
 Ph3r=lpc(Ph3,14);
 
-Ph1rf=filtfilt(1,Ph1r,[Xk(:,Sidx-1);Ph1]);
-Ph2rf=filtfilt(1,Ph2r,[Xk(:,Uidx-1);Ph2]);
-Ph3rf=filtfilt(1,Ph3r,[Xk(:,Nidx-1);Ph3]);
+Ph1rf=filter(Ph1r,1,Ph1);
+Ph2rf=filter(Ph2r,1,Ph2);
+Ph3rf=filter(Ph3r,1,Ph3);
 
 figure(9)
 subplot(3,1,1)
-plot(Ph1rf(513:end))
+plot(Ph1rf)
 title('LPC Residual for "s" Phoneme')
 
 subplot(3,1,2)
-plot(Ph2rf(513:end))
+plot(Ph2rf)
 title('LPC Residual for "u" Phoneme')
 
 subplot(3,1,3)
-plot(Ph3rf(513:end))
+plot(Ph3rf)
 title('LPC Residual for "n" Phoneme')
 
 
