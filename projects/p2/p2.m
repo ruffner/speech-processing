@@ -1,4 +1,4 @@
-%% Project 2 
+%% PROJECT 2
 % Matt Ruffner
 % EE699 Speech Processing
 % March 7th, 2019
@@ -16,7 +16,7 @@ CfSlow=zeros(5,5);
 CfFast=zeros(5,5);
 CfSoft=zeros(5,5);
 
-% COMPARE BASED ON SPEAKER AND CONDITION
+%% COMPARE BASED ON WORD, SPEAKER AND CONDITION. CREATE CONFUSION MATRICIES
 % iterate over 'training' words
 for i=1:5
     % compare with the 5 kinds of 'test' words
@@ -24,7 +24,7 @@ for i=1:5
         Cc=zeros(1,5);
         for j=1:5
             % USE MY DTW FUNCTION
-            Cc(j)=ruffdtw(trainData{i}.audio, testData{j}{k}.audio);
+            [Cc(j) path]=ruffdtw(trainData{i}.audio, testData{j}{k}.audio);
             
             % THIS LINE USES THE BUILT IN FUNCTION FOR REFERENCE
             %Cc(j)=dtw(trainData{i}.audio', testData{j}{k}.audio');
@@ -90,3 +90,15 @@ plotConfMat(CfFast)
 
 figure(7)
 plotConfMat(CfSoft)
+
+
+%% EXAMPLE ALIGNMENTS FOR 'FAST' AND 'SLOW' AGAINST A TEMPLATE
+
+% test a slow destination
+[sDist,sPath]=ruffdtw(trainData{4}.audio,testData{4}{11}.audio);
+
+% test a fast destination
+[fDist,fPath]=ruffdtw(trainData{4}.audio,testData{4}{22}.audio);
+
+
+
