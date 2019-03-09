@@ -1,4 +1,4 @@
-function [dist,path]=ruffdtw(X,Y)
+function [dist,path]=ruffdtw(X,Y,W)
 % matt ruffner
 % spring 2019 
 % speech processing
@@ -10,6 +10,9 @@ assert(size(X,2)==size(Y,2));
 
 I=size(X,1); % rows in X
 J=size(Y,1); % rows in Y
+
+X=X*W;
+Y=Y*W;
 
 % local distance matrix
 d=zeros(I,J);

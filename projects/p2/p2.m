@@ -6,6 +6,15 @@
 % generate/load test data
 [testData,trainData] = generateFeatures('audio/');
 
+% generate covariance matrix over entire dataset
+allData=[];
+for i=1:5
+    for j=1:length(testData{i})
+        allData=[allData; testData{i}{j}.audio];
+    end
+end
+dataCov=cov(allData);
+
 % create empty confusion matricies for the different analyses
 Cf=zeros(5,5);
 CfG1=zeros(5,5);
@@ -24,12 +33,12 @@ for i=1:5
         Cc=zeros(1,5);
         for j=1:5
             % USE MY DTW FUNCTION
-            [Cc(j) path]=ruffdtw(trainData{i}.audio, testData{j}{k}.audio);
+            [Cc(j),path]=ruffdtw(trainData{i}.audio, testData{j}{k}.audio, dataCov);
             
             % THIS LINE USES THE BUILT IN FUNCTION FOR REFERENCE
             %Cc(j)=dtw(trainData{i}.audio', testData{j}{k}.audio');
         end
-        [val pos]=min(Cc);
+        [val,pos]=min(Cc);
         % CATEGORIZE BASED ON SPEAKER
         switch testData{1}{k}.cat
             case 'GENERAL1'
@@ -68,37 +77,89 @@ end
 % https://github.com/vtshitoyan/plotConfMat
 
 figure(1)
-plotConfMat(Cf)
+acc=plotConfMat(Cf);
+title(sprintf('Overall Confusion Matrix, accuracy: %.2f%%', acc))
 
 figure(2)
-plotConfMat(CfG1)
+acc=plotConfMat(CfG1);
+title(sprintf('GENERAL1 Confusion Matrix, accuracy: %.2f%%', acc))
 
 figure(3)
-plotConfMat(CfG2)
-
-figure(3)
-plotConfMat(CfG3)
+acc=plotConfMat(CfG2);
+title(sprintf('GENERAL2 Confusion Matrix, accuracy: %.2f%%', acc))
 
 figure(4)
-plotConfMat(CfNorm)
+acc=plotConfMat(CfG3);
+title(sprintf('GENERAL3 Confusion Matrix, accuracy: %.2f%%', acc))
 
 figure(5)
-plotConfMat(CfSlow)
+acc=plotConfMat(CfNorm);
+title(sprintf('Normal Voice Confusion Matrix, accuracy: %.2f%%', acc))
 
 figure(6)
-plotConfMat(CfFast)
+acc=plotConfMat(CfSlow);
+title(sprintf('Slow Voice Confusion Matrix,  accuracy: %.2f%%', acc))
 
 figure(7)
-plotConfMat(CfSoft)
+acc=plotConfMat(CfFast);
+title(sprintf('Fast Voice Confusion Matrix,  accuracy: %.2f%%', acc))
+
+figure(8)
+acc=plotConfMat(CfSoft);
+title(sprintf('Soft Voice Confusion Matrix,  accuracy: %.2f%%', acc))
 
 
-%% EXAMPLE ALIGNMENTS FOR 'FAST' AND 'SLOW' AGAINST A TEMPLATE
+%% EXAMPLE ALIGNMENTS FOR 'FAST' VS 'SLOW' DESTINATION
 
 % test a slow destination
-[sDist,sPath]=ruffdtw(trainData{4}.audio,testData{4}{11}.audio);
+[sDist,sPath]=ruffdtw(trainData{4}.audio,testData{4}{11}.audio, dataCov);
 
 % test a fast destination
-[fDist,fPath]=ruffdtw(trainData{4}.audio,testData{4}{22}.audio);
+[fDist,fPath]=ruffdtw(trainData{4}.audio,testData{4}{22}.audio, dataCov);
+
+sSize=max(sPath);
+fSize=max(fPath);
+sMidLine=sSize(2)*(0:1/sSize(1):1-1/sSize(1));
+fMidLine=fSize(2)*(0:1/fSize(1):1-1/fSize(1));
+
+figure(9)
+plot(sPath(:,1),sPath(:,2), 'r+')
+hold on
+plot(1:sSize(1),sMidLine)
+title('Slow Destination Path')
+hold off
+
+figure(10)
+plot(fPath(:,1),fPath(:,2), 'r+')
+hold on
+plot(1:fSize(1),fMidLine)
+title('Fast Destination Path')
+hold off
 
 
+%% EXAMPLE ALIGNMENTS FOR 'FAST' VS 'SLOW' ZERO
 
+% test a slow destination
+[sDist,sPath]=ruffdtw(trainData{5}.audio,testData{5}{11}.audio, dataCov);
+
+% test a fast destination
+[fDist,fPath]=ruffdtw(trainData{5}.audio,testData{5}{22}.audio, dataCov);
+
+sSize=max(sPath);
+fSize=max(fPath);
+sMidLine=sSize(2)*(0:1/sSize(1):1-1/sSize(1));
+fMidLine=fSize(2)*(0:1/fSize(1):1-1/fSize(1));
+
+figure(11)
+plot(sPath(:,1),sPath(:,2), 'r+')
+hold on
+plot(1:sSize(1),sMidLine)
+title('Slow Zero')
+hold off
+
+figure(12)
+plot(fPath(:,1),fPath(:,2), 'r+')
+hold on
+plot(1:fSize(1),fMidLine)
+title('Fast Zero')
+hold off

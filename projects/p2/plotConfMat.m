@@ -1,4 +1,4 @@
-function plotConfMat(varargin)
+function [accuracy]=plotConfMat(varargin)
 %PLOTCONFMAT plots the confusion matrix with colorscale, absolute numbers
 %   and precision normalized percentages
 %
@@ -36,6 +36,8 @@ confpercent = 100*confmat./repmat(sum(confmat, 1),numlabels,1);
 imagesc(confpercent);
 title(sprintf('Accuracy: %.2f%%', 100*trace(confmat)/sum(confmat(:))));
 ylabel('Output Class'); xlabel('Target Class');
+
+accuracy=100*trace(confmat)/sum(confmat(:));
 
 % set the colormap
 colormap(flipud(gray));
