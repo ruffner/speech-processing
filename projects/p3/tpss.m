@@ -10,8 +10,10 @@ function S=tpss(s,fs,ts,ps)
 
 
 % get gottal opening and closing instances
-[gci,goi] = dypsa(s,fs);
+[gci,goi]=v_dypsa(s,fs);
 
+figure(1)
+plot(gci,goi)
 
 S=s;
 

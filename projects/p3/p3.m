@@ -6,4 +6,10 @@
 
 s = tpss(sig,fs,1,[1 1]);
 
-soundsc(s,fs)
+%soundsc(s,fs)
+
+[gci,goi]=v_dypsa(sig,fs);
+
+figure(1)
+plot(gci)
+
