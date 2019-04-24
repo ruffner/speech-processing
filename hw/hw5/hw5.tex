@@ -32,7 +32,8 @@
 \maketitle
 
 \section{Speaker Identification}
-From the MSR Identity Toolbox:
+Directly from the MSR Identity Toolbox~\cite{msr}.
+
 
 \begin{lstlisting}[caption = {GMM-UBM Training Code from THe MSR Toolbox.}]
 
@@ -81,6 +82,9 @@ eer = compute_eer(gmmScores, answers, false);
 
 \section{Speech Coding}
 
+Based on the Analysis by Synthesis methods discussed in~\cite{info7020032}, the following encoding and decoding block diagrams were determined (seen in Figs. \ref{fig:enc} and \ref{fig:dec}
+
+
 
 \section{Speech Synthesis}
 Using the \texttt{sapisynth} command from the Voicebox toolbox in MATLAB, the following sentence was synthesized:
@@ -113,6 +117,31 @@ The Spectrogram of the synthesized speech is shown in Fig. \ref{fig:spec}.
 The code for this is shown in Listing \ref{pt4code}.
 
 \lstinputlisting[caption = {Code for speech enhancement using\texttt{ssubmmse}.}, label={pt4code}]{hw5p4.m}
+
+Spectrograms of the original speech signal, the speech signal with noise added, and the enhanced speech signal are shown in Figs. \ref{fig:p4clean}, \ref{fig:p4noise}, and \ref{fig:p4enhan}, respectively.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=8cm]{ee599hw5p4-1.png}
+    \caption{Spectrogram of clean speech.}
+    \label{fig:p4clean}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=8cm]{ee599hw5p4-2.png}
+    \caption{Spectrogram of speech signal with noise added.}
+    \label{fig:p4noise}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=8cm]{ee599hw5p4-3.png}
+    \caption{Spectrogram of enhanced speech.}
+    \label{fig:p4enhan}
+\end{figure}
+
+\newpage
 
 \bibliographystyle{ieeetr}
 \bibliography{refs.bib}
