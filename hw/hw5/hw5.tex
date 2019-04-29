@@ -32,8 +32,7 @@
 \maketitle
 
 \section{Speaker Identification}
-Directly from the MSR Identity Toolbox~\cite{msr}.
-
+Directly from the MSR Identity Toolbox~\cite{msr}. 
 
 \begin{lstlisting}[caption = {GMM-UBM Training Code from THe MSR Toolbox.}]
 
@@ -84,6 +83,21 @@ eer = compute_eer(gmmScores, answers, false);
 
 Based on the Analysis by Synthesis methods discussed in~\cite{info7020032}, the following encoding and decoding block diagrams were determined (seen in Figs. \ref{fig:enc} and \ref{fig:dec}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=12cm]{encoder}
+    \caption{Encoder block diagram~\cite{msr}.}
+    \label{fig:enc}
+\end{figure}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=12cm]{decoder}
+    \caption{Decoder block diagram~\cite{msr}.}
+    \label{fig:dec}
+\end{figure}
+
 
 
 \section{Speech Synthesis}
@@ -92,14 +106,15 @@ Using the \texttt{sapisynth} command from the Voicebox toolbox in MATLAB, the fo
     Oh my god can I pet your dog?
 \end{quote}
 
-The code to implement this, with a female child voice spoken 3 increments faster and the pitch shifted up by 3, with the word dog emphasized, is shown below:
+The code to implement this, with a female child voice spoken 3 increments faster and the pitch shifted up by 3, with the word dog emphasized, is shown in Listing \ref{sent}.
+The Spectrogram of the synthesized speech is shown in Fig. \ref{fig:spec}.
 
-\begin{lstlisting}[caption = {Sentence of speech that was synthesized.}]
+
+\begin{lstlisting}[caption = {Sentence of speech that was synthesized.},label={sent}]
 >> sapisynth('<rate speed="3">Oh my god can i pet your <emph>dog?</emph></rate>','fcp3')
 
-\end{lstlisting}
 
-The Spectrogram of the synthesized speech is shown in Fig. \ref{fig:spec}.
+\end{lstlisting}
 
 \begin{figure}[h!]
     \centering
